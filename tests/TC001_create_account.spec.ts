@@ -5,8 +5,8 @@ import { updateJSONFile } from "../helpers/jsonDataHandler";
 import { accountData } from "../data/account.interface";
 const csvFilePath = './data/accounts.csv';
 
-//test.use({ storageState: "./logins/salesforceLogin.json" })
-test('Creating an Account Using CSV Data', async ({ LeaftapsLogin}) => {
+//test.use({ storageState: "./logins/testleafLogin.json" })
+test('Creating an Local storage', async ({ LeaftapsLogin}) => {
     const data = await readDataFromCSV(csvFilePath);
     test.info().annotations.push(
         { type: 'TestCase', description: 'Creating an Account Using CSV Data' },
@@ -18,25 +18,5 @@ test('Creating an Account Using CSV Data', async ({ LeaftapsLogin}) => {
         const acctName = FakerData.getRandomTitle();
        updateJSONFile<accountData>("../data/accountdata.json", { TC001: acctName});
         await LeaftapsLogin.leaftapsLogin("ADMINLOGIN");
-        // //await SalesforceLogin.verifyHomeLabel();
-        // await SalesforceHome.appLauncher()
-        // await SalesforceHome.viewAll();
-        // await SalesforceHome.searchApp("Accounts");
-        // await SalesforceHome.selectApp("Accounts");
-        // await SalesforceAccount.newButton();
-        // await SalesforceAccount.accountName(acctName);
-        // await SalesforceAccount.accountNumber(FakerData.getMobileNumber());
-        // await SalesforceAccount.ratingDropdown(Rating);
-        // await SalesforceAccount.accountType(Type);
-        // await SalesforceAccount.industry(Industry);
-        // await SalesforceAccount.ownerShip(Ownership);
-        // await SalesforceAccount.billingStreet(BillingStreet);
-        // await SalesforceAccount.billingCity(BillingCity);
-        // await SalesforceAccount.postalCode(PostalCode);
-        // await SalesforceAccount.billingState(BillingState);
-        // await SalesforceAccount.billingCountry(BillingCountry);
-        // await SalesforceAccount.saveButton()
-        // await SalesforceAccount.verifiAccountName(acctName)
-        //await SalesforceAccount.closeTAB()
     }
 });
