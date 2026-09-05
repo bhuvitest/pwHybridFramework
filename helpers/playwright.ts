@@ -1,4 +1,3 @@
-
 import { Page, test, expect, BrowserContext, Locator } from "@playwright/test";
 import * as path from 'path';
 import fs from 'fs';
@@ -331,7 +330,7 @@ export abstract class PlaywrightWrapper {
 
     async selectDropdown(selector: string, options: { value?: string; index?: number; label?: string }) {
         await test.step(`Selecting from dropdown using ${JSON.stringify(options)}`, async () => {
-            const dropdown = await this.page.locator(selector);
+            const dropdown =  this.page.locator(selector);
 
             if (options.value) {
                 await dropdown.selectOption({ value: options.value });
