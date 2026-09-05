@@ -1,5 +1,5 @@
 {
     "api_client":"https://login.salesforce.com/",
     "bearerTokken":"https://login.salesforce.com/services/oauth2/token",
-    "leadEndPoint":"/services/data/v60.0/sobjects/lead"
+    "leadEndPoint":"/services/data/v67.0/sobjects/lead"
 }
