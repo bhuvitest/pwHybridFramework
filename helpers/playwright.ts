@@ -1,8 +1,8 @@
 import { Page, test, expect, BrowserContext, Locator } from "@playwright/test";
+import * as allure from "allure-js-commons";
+import { ContentType } from "allure-js-commons";
 import * as path from 'path';
 import fs from 'fs';
-
-
 
 export abstract class PlaywrightWrapper {
 
@@ -22,6 +22,8 @@ export abstract class PlaywrightWrapper {
     }
 
 
+
+
     /**
    * Types into the specified textbox after clearing any existing text.
    * 
@@ -31,11 +33,9 @@ export abstract class PlaywrightWrapper {
    */
     async type(locator: string, name: string, data: string) {
         await test.step(`Textbox ${name} filled with data: ${data}`, async () => {
-
-
             await this.page.locator(locator).clear();
             await this.page.locator(locator).fill(data);
-
+            await this.attachScreenshot('After entering data in ' + name);
         }
         )
     }
@@ -53,6 +53,7 @@ export abstract class PlaywrightWrapper {
             await this.page.fill(locator, data, { force: true })
             await this.page.focus(locator)
             await this.page.keyboard.press("Enter");
+            await this.attachScreenshot('After entering data in ' + name);
 
         });
     }
@@ -67,6 +68,7 @@ export abstract class PlaywrightWrapper {
             await this.page.locator(locator).clear();
             await this.page.focus(locator);
             await this.page.keyboard.type(data, { delay: 100 });
+            await this.attachScreenshot('After typing data in textbox');
         });
     }
 
@@ -81,6 +83,7 @@ export abstract class PlaywrightWrapper {
             await this.page.locator(locator).clear();
             await this.page.keyboard.type(data, { delay: 400 });
             await this.page.keyboard.press("Enter");
+            await this.attachScreenshot('After pressing Enter in ' + name);
         });
     }
 
@@ -94,6 +97,7 @@ export abstract class PlaywrightWrapper {
         await test.step(`The ${name} ${type} clicked`, async () => {
             await this.page.waitForSelector(locator, { state: 'visible' });
             await this.page.locator(locator).click();
+            await this.attachScreenshot('After clicking ' + name);
         });
     }
 
@@ -101,6 +105,7 @@ export abstract class PlaywrightWrapper {
         await test.step(`The ${name} ${type} clicked`, async () => {
             await this.page.waitForSelector(locator, { state: 'visible' });
             await this.page.locator(locator).click({ force: true });
+            await this.attachScreenshot('After forcing click on ' + name);
         });
     }
 
@@ -177,6 +182,7 @@ export abstract class PlaywrightWrapper {
     async waitSelector(locator: string, name?: string | "Element") {
         await test.step(`Waiting for ${name} Visible`, async () => {
             await this.page.waitForSelector(locator, { timeout: 30000, state: "attached" });
+            await this.attachScreenshot('After waiting for ' + name + ' to be visible');
         })
     }
 
@@ -256,6 +262,7 @@ export abstract class PlaywrightWrapper {
             } else {
                 await this.page.locator(locator).click();
             }
+            await this.attachScreenshot('After clicking ' + name);
         })
     }
 
@@ -279,6 +286,7 @@ export abstract class PlaywrightWrapper {
                     console.error(error)
                 }
             }
+            await this.attachScreenshot('After verifying the presence of ' + name + ' in the frame');
         });
     }
 
@@ -295,6 +303,7 @@ export abstract class PlaywrightWrapper {
                     this.wait('minWait')
                     await ele.hover();
                     await ele.click();
+                    await this.attachScreenshot('After clicking ' + name);
                     console.log(`Ele visible`);
                 } catch (error) {
                     console.log("Frame not found" + error)
@@ -317,6 +326,7 @@ export abstract class PlaywrightWrapper {
                 await this.page.locator(locator).fill(data);
                 await this.page.keyboard.press("Enter");
             }
+            await this.attachScreenshot('After typing data in ' + name);
         });
     }
 
@@ -324,13 +334,13 @@ export abstract class PlaywrightWrapper {
         await test.step(`The ${Menu} ${name} clicked`, async () => {
             await this.page.hover(hoverLocator);
             await this.page.click(clickLocator);
-
+            await this.attachScreenshot('After clicking ' + name);
         })
     }
 
     async selectDropdown(selector: string, options: { value?: string; index?: number; label?: string }) {
         await test.step(`Selecting from dropdown using ${JSON.stringify(options)}`, async () => {
-            const dropdown =  this.page.locator(selector);
+            const dropdown = this.page.locator(selector);
 
             if (options.value) {
                 await dropdown.selectOption({ value: options.value });
@@ -365,6 +375,7 @@ export abstract class PlaywrightWrapper {
         await test.step(`The ${Menu} ${name} Entered`, async () => {
             await this.page.focus(locator)
             await this.page.keyboard.press(keyAction)
+            await this.attachScreenshot('After pressing key in ' + name);
         })
     }
 
@@ -372,6 +383,7 @@ export abstract class PlaywrightWrapper {
         await test.step(`The ${name} clicked`, async () => {
             await this.page.locator(locator).click({ force: true })
             await this.page.locator(locator).click({ force: true })
+            await this.attachScreenshot('After double-clicking ' + name);
         })
     }
 
@@ -389,7 +401,7 @@ export abstract class PlaywrightWrapper {
         try {
             await this.wait('minWait')
             await this.page.waitForSelector(locator, { state: 'hidden', timeout: 20000 });
-            console.log(`Element with XPath "${type}" is hidden as expected.`);
+            await this.attachScreenshot(`Element with XPath "${type}" is hidden as expected.`);
         } catch (error) {
             console.error(`Element with XPath "${type}" is still visible.`);
         }
@@ -486,6 +498,7 @@ export abstract class PlaywrightWrapper {
             } else {
                 throw new Error(`Cannot fill textbox ${name} with null data`);
             }
+            await this.attachScreenshot(`After filling textbox ${name} with data: ${resolvedData}`);
         });
     }
 
@@ -497,7 +510,7 @@ export abstract class PlaywrightWrapper {
             if (value == false) {
                 console.log("The CheckBox is not Clicked");
             }
-
+            await this.attachScreenshot(`After checking checkbox ${name}`);
         })
     }
 
@@ -511,7 +524,7 @@ export abstract class PlaywrightWrapper {
     }
 
     async radioButton(locator: string, name: string) {
-        await test.step(`Checkbox ${name} is selected`, async () => {
+        await test.step(`Radio button ${name} is selected`, async () => {
 
             if (!await this.page.isChecked(locator)) {
                 await this.page.focus(locator)
@@ -519,6 +532,7 @@ export abstract class PlaywrightWrapper {
             } else {
                 console.log("The button is already checked")
             }
+            await this.attachScreenshot(`After selecting radio button ${name}`);
         })
     }
 
@@ -645,5 +659,15 @@ export abstract class PlaywrightWrapper {
         }
     }
 
-
+    /**
+* Attaches a screenshot to the Allure report with the specified name.
+* @param {string} name - The name for the screenshot attachment.
+*/
+    async attachScreenshot(name: string) {
+        await allure.attachment(
+            name,
+            await this.page.screenshot(),
+            ContentType.PNG
+        );
+    }
 }
